@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kms-backend
+  namespace: kms
+  labels:
+    app: kms-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kms-backend
+  template:
+    metadata:
+      labels:
+        app: kms-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: backend
+        image: ghcr.io/krishnamohankapri/kms-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: http
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: mongo-uri
+        - name: PORT
+          value: "8001"
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: jwt-secret
+        - name: STRIPE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: stripe-secret-key
+        - name: STRIPE_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: stripe-webhook-secret
+        - name: CLOUDINARY_CLOUD_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: kms-config
+              key: cloudinary-cloud-name
+        - name: CLOUDINARY_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: cloudinary-api-key
+        - name: CLOUDINARY_API_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: cloudinary-api-secret
+        - name: GMAIL_USER
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: gmail-user
+        - name: GMAIL_APP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: gmail-app-password
+        - name: EDAMAM_APP_ID
+          valueFrom:
+            configMapKeyRef:
+              name: kms-config
+              key: edamam-app-id
+        - name: EDAMAM_APP_KEY
+          valueFrom:
+            secretKeyRef:
+              name: kms-secrets
+              key: edamam-app-key
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
