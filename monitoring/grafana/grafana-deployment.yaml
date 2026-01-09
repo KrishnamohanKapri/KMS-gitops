@@ -30,6 +30,8 @@ spec:
         - name: config
           mountPath: /etc/grafana/grafana.ini
           subPath: grafana.ini
+        - name: datasources
+          mountPath: /etc/grafana/provisioning/datasources
         resources:
           requests:
             memory: "128Mi"
@@ -41,3 +43,6 @@ spec:
       - name: config
         configMap:
           name: grafana-config
+      - name: datasources
+        configMap:
+          name: grafana-datasources
