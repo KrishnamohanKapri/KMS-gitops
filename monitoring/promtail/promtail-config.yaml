@@ -12,15 +12,29 @@ data:
       filename: /tmp/positions.yaml
     clients:
       - url: http://loki:3100/loki/api/v1/push
+    limits_config:
+      max_streams: 1000  # Reduced from 10000
+      max_line_size: 256KB
     scrape_configs:
       - job_name: kubernetes-pods
         kubernetes_sd_configs:
           - role: pod
-            namespaces:
-              names:
-                - kms
-                - monitoring
         relabel_configs:
+          # First, drop all system namespaces
+          - action: drop
+            source_labels:
+              - __meta_kubernetes_namespace
+            regex: (kube-system|kube-public|kube-node-lease|local-path-storage|default)
+          # Then, only keep kms and monitoring
+          - action: keep
+            source_labels:
+              - __meta_kubernetes_namespace
+            regex: (kms|monitoring)
+          # Drop Promtail's own logs to avoid recursion
+          - action: drop
+            source_labels:
+              - __meta_kubernetes_pod_name
+            regex: promtail.*
           - source_labels: [__meta_kubernetes_pod_node_name]
             target_label: __host__
           - action: labelmap
