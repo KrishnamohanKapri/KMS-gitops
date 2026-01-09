@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: kms
 
 resources:
+  - gatewayclass.yaml
   - gateway.yaml
   - httproute-frontend.yaml
   - httproute-backend.yaml

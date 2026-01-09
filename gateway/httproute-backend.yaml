@@ -10,7 +10,7 @@ spec:
   - "api.kms.example.com"
   rules:
   - matches:
-    -path:
+    - path:
       type: PathPrefix
       value: /
     backendRefs:
