@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mimir
+  namespace: monitoring
+spec:
+  serviceName: mimir
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mimir
+  template:
+    metadata:
+      labels:
+        app: mimir
+    spec:
+      containers:
+      - name: mimir
+        image: grafana/mimir:2.10.1
+        args:
+          - -config.file=/etc/mimir/mimir.yaml
+        ports:
+        - containerPort: 9009
+          name: http
+        - containerPort: 9097
+          name: grpc
+        - containerPort: 7946
+          name: memberlist
+        volumeMounts:
+        - name: config
+          mountPath: /etc/mimir
+        - name: storage
+          mountPath: /var/mimir
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+      volumes:
+      - name: config
+        configMap:
+          name: mimir-config
+  volumeClaimTemplates:
+  - metadata:
+      name: storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi

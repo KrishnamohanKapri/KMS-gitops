@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mimir-config
+  namespace: monitoring
+data:
+  mimir.yaml: |
+    target: all
+    server:
+      http_listen_port: 9009
+      grpc_listen_port: 9097
+    distributor:
+      pool:
+        health_check_ingesters: true
+    ingester:
+      lifecycler:
+        address: 127.0.0.1
+        ring:
+          kvstore:
+            store: memberlist
+          replication_factor: 1
+        final_sleep: 0s
+      chunk_idle_period: 1h
+      max_chunk_age: 1h
+      chunk_target_size: 1048576
+      chunk_retain_period: 30s
+      max_query_lookback: 0s
+    limits:
+      ingestion_rate: 25000
+      ingestion_burst_size: 25000
+      max_global_series_per_user: 0
+      max_global_series_per_metric: 0
+    schema:
+      configs:
+        - from: "2020-10-24"
+          store: tsdb
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: index_
+            period: 24h
+    storage:
+      filesystem:
+        dir: /var/mimir/data
+    blocks_storage:
+      backend: filesystem
+      filesystem:
+        dir: /var/mimir/blocks
+    compactor:
+      data_dir: /var/mimir/compactor
+      sharding_ring:
+        kvstore:
+          store: memberlist
+    memberlist:
+      join_members:
+        - mimir:7946
