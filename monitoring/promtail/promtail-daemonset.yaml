@@ -18,6 +18,9 @@ spec:
         image: grafana/promtail:2.9.2
         args:
           - -config.file=/etc/promtail/promtail.yaml
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
         volumeMounts:
         - name: config
           mountPath: /etc/promtail
