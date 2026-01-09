@@ -88,4 +88,17 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-    - CreateNamespace=true
+    - CreateNamespace=true\
+  ignoreDifferences:
+  - group: gateway.networking.k8s.io
+    kind: Gateway
+    jsonPointers:
+    - /status
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    jsonPointers:
+    - /status
+  - group: gateway.networking.k8s.io
+    kind: GatewayClass
+    jsonPointers:
+    - /status
