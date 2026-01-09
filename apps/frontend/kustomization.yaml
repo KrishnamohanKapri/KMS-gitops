@@ -9,4 +9,4 @@ resources:
 
 images:
   - name: ghcr.io/krishnamohankapri/kms-frontend
-    newTag: v1.0.3-5ae6a8a4
+    newTag: v1.0.5-e388b2ac
