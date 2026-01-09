@@ -28,6 +28,5 @@ data:
         local:
           path: /var/tempo/traces
     overrides:
-      defaults:
-        ingestion_burst_size_bytes: 1073741824
-        ingestion_rate_limit_bytes: 1073741824
+      ingestion_burst_size_bytes: 1073741824
+      ingestion_rate_limit_bytes: 1073741824
