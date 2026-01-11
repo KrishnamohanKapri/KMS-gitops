@@ -36,16 +36,19 @@ data:
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
           # Construct log path: /var/log/pods/namespace_podname_poduid/containername/*.log
-          # Use replace action to build the full path
-          - action: replace
-            source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
+          # Step 1: Build pod directory path
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
             separator: '_'
-            target_label: __tmp_path_dir
+            target_label: __tmp_pod_dir
+          - source_labels: [__tmp_pod_dir]
             regex: '(.+)'
+            target_label: __tmp_pod_path
             replacement: '/var/log/pods/$1'
-          - action: replace
-            source_labels: [__tmp_path_dir, __meta_kubernetes_pod_container_name]
+          # Step 2: Add container name and log pattern
+          - source_labels: [__tmp_pod_path, __meta_kubernetes_pod_container_name]
             separator: '/'
-            target_label: __path__
+            target_label: __tmp_full_path
+          - source_labels: [__tmp_full_path]
             regex: '(.+)'
+            target_label: __path__
             replacement: '$1/*.log'
