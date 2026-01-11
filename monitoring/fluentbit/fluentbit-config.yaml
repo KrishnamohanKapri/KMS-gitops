@@ -13,8 +13,7 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods
-        Exclude_Path      /var/log/pods/*/argocd*,/var/log/pods/*/monitoring*,/var/log/pods/*/kube-*,/var/log/pods/*/gateway*,/var/log/pods/*/fluentbit*
+        Path              /var/log/containers/*kms*.log
         Path_Key          filename
         Parser            docker
         Tag               kube.*
@@ -25,11 +24,6 @@ data:
         DB                /tmp/flb-db/flb-kube.db
         DB.locking        true
 
-    [FILTER]
-        Name                rewrite_tag
-        Match               kube.*
-        Rule                $filename ^/var/log/pods/(?<namespace>[^_]+)_(?<pod_name>[^_]+)_(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/.+\.log$ kube.$container_name.$namespace.$pod_name false
-        Emitter_Name        re_emitted
 
     [FILTER]
         Name                kubernetes
@@ -44,10 +38,6 @@ data:
         Labels              On
         Annotations         Off
 
-    [FILTER]
-        Name                grep
-        Match               kube.*
-        Regex               $kubernetes['namespace_name'] ^kms$
 
     [OUTPUT]
         Name        loki
