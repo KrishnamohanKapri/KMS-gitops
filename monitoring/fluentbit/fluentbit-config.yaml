@@ -16,6 +16,8 @@ data:
         Path              /var/log/pods/kms_*/*/*.log
         Path_Key          filename
         Parser            none
+        Multiline         On
+        Parser_Firstline  ^\d{4}-\d{2}-\d{2}
         Tag               kube.*
         Refresh_Interval  5
         Mem_Buf_Limit     50MB
