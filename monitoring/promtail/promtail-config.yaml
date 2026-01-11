@@ -22,11 +22,11 @@ data:
         pipeline_stages:
           - docker: {}
         relabel_configs:
-          # Filter to kms namespace FIRST
+          # Filter to kms namespace
           - source_labels: [__meta_kubernetes_namespace]
             action: keep
             regex: kms
-          # Add standard labels
+          # Add labels
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
           - source_labels: [__meta_kubernetes_namespace]
@@ -35,12 +35,16 @@ data:
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          # Path construction - two step approach
+          # Construct log path: /var/log/pods/namespace_podname_poduid/containername/*.log
           - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
             separator: _
-            target_label: __tmp_path_prefix
-            replacement: /var/log/pods/$1_$2_$3
-          - source_labels: [__tmp_path_prefix, __meta_kubernetes_pod_container_name]
+            target_label: __tmp_pod_path
+          - source_labels: [__tmp_pod_path]
+            regex: (.+)
+            target_label: __tmp_pod_dir
+            replacement: /var/log/pods/$1
+          - source_labels: [__tmp_pod_dir, __meta_kubernetes_pod_container_name]
             separator: /
+            regex: (.+)
             target_label: __path__
-            replacement: $1/$2/*.log
+            replacement: $1/*.log
