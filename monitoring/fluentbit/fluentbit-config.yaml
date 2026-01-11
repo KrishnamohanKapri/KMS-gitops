@@ -13,13 +13,15 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods/kms_*/*/*.log
+        Path              /var/log/pods
+        Exclude_Path      /var/log/pods/*/argocd*,/var/log/pods/*/monitoring*,/var/log/pods/*/kube-*,/var/log/pods/*/gateway*
+        Path_Key          filename
         Parser            docker
         Tag               kube.*
         Refresh_Interval  5
         Mem_Buf_Limit     50MB
         Skip_Long_Lines   On
-        Path_Key           filename
+        Read_from_Head    false
 
     [FILTER]
         Name                kubernetes
