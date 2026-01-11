@@ -26,9 +26,10 @@ data:
 
 
     [FILTER]
-        Name                record_modifier
+        Name                rewrite_tag
         Match               kube.*
-        Record              namespace kms
+        Rule                $filename ^/var/log/pods/kms_(?<pod_name>[^_]+)_(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/.+\.log$ kube.kms.$pod_name.$container_name false
+        Emitter_Name        re_emitted
 
     [FILTER]
         Name                kubernetes
@@ -42,8 +43,6 @@ data:
         K8S-Logging.Exclude Off
         Labels              On
         Annotations         Off
-        Use_Kubelet         true
-        Kubelet_Port        10250
 
 
     [OUTPUT]
