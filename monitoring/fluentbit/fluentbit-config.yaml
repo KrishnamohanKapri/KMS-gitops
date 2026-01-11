@@ -13,9 +13,7 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods
-        Exclude_Path      /var/log/pods/*/argocd*,/var/log/pods/*/monitoring*,/var/log/pods/*/kube-*,/var/log/pods/*/gateway*
-        Path_Key          filename
+        Path              /var/log/pods/kms_*/*/*.log
         Parser            docker
         Tag               kube.*
         Refresh_Interval  5
@@ -34,11 +32,8 @@ data:
         Keep_Log            Off
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
-
-    [FILTER]
-        Name                grep
-        Match               kube.*
-        Regex               namespace kms
+        Labels              On
+        Annotations         Off
 
     [OUTPUT]
         Name        http
