@@ -43,8 +43,8 @@ data:
             target_label: __tmp_kubernetes_pod_path_full
           - source_labels: [__tmp_kubernetes_pod_path_full]
             target_label: __path__
-            replacement: ${__tmp_kubernetes_pod_path_full}/*.log
+            replacement: $1/*.log
           # Filter to kms namespace AFTER path is set
           - source_labels: [__meta_kubernetes_namespace]
-            action: keep
-            regex: kms
+#            action: keep
+#            regex: kms
