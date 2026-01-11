@@ -26,6 +26,11 @@ data:
 
 
     [FILTER]
+        Name                record_modifier
+        Match               kube.*
+        Record              namespace kms
+
+    [FILTER]
         Name                rewrite_tag
         Match               kube.*
         Rule                $filename ^/var/log/pods/kms_(?<pod_name>[^_]+)_(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/.+\.log$ kube.kms.$pod_name.$container_name true
