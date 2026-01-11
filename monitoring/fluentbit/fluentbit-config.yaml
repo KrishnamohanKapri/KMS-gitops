@@ -26,6 +26,12 @@ data:
 
 
     [FILTER]
+        Name                rewrite_tag
+        Match               kube.*
+        Rule                $filename ^/var/log/pods/kms_(?<pod_name>[^_]+)_(?<pod_uid>[^/]+)/(?<container_name>[^/]+)/.+\.log$ kube.$container_name.kms.$pod_name false
+        Emitter_Name        re_emitted
+
+    [FILTER]
         Name                kubernetes
         Match               kube.*
         Kube_URL            https://kubernetes.default.svc:443
@@ -46,9 +52,8 @@ data:
         Port        3100
         URI         /loki/api/v1/push
         Labels      job=fluentbit
-        Label_keys  $namespace,$pod_name,$container_name
-        Remove_keys filename
         Auto_kubernetes_labels on
+        Remove_keys filename
 
   parsers.conf: |
     [PARSER]
