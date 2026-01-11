@@ -13,7 +13,7 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods/*/*/*.log
+        Path              /var/log/pods/kms_*/*/*.log
         Path_Key          filename
         Parser            docker
         Tag               kube.*
