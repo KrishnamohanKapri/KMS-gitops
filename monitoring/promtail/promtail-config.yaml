@@ -36,21 +36,16 @@ data:
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
           # Construct log path: /var/log/pods/namespace_podname_poduid/containername/*.log
-          # Combine namespace_podname_poduid with underscore
-          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
-            separator: "_"
-            target_label: __tmp_kubernetes_pod_dir
-          # Prepend /var/log/pods/ to the combined value
-          - source_labels: [__tmp_kubernetes_pod_dir]
-            regex: ^(.+)$
-            target_label: __tmp_kubernetes_pod_path
-            replacement: /var/log/pods/$1
-          # Add container name
-          - source_labels: [__tmp_kubernetes_pod_path, __meta_kubernetes_pod_container_name]
-            separator: "/"
-            target_label: __tmp_kubernetes_pod_path_full
-          # Add /*.log suffix
-          - source_labels: [__tmp_kubernetes_pod_path_full]
-            regex: ^(.+)$
+          # Use replace action to build the full path
+          - action: replace
+            source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
+            separator: '_'
+            target_label: __tmp_path_dir
+            regex: '(.+)'
+            replacement: '/var/log/pods/$1'
+          - action: replace
+            source_labels: [__tmp_path_dir, __meta_kubernetes_pod_container_name]
+            separator: '/'
             target_label: __path__
-            replacement: $1/*.log
+            regex: '(.+)'
+            replacement: '$1/*.log'
