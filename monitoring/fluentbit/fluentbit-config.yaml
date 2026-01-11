@@ -47,7 +47,7 @@ data:
 
     [OUTPUT]
         Name        loki
-        Match       kube.*
+        Match       kube.kms.*
         Host        loki.monitoring.svc
         Port        3100
         URI         /loki/api/v1/push
