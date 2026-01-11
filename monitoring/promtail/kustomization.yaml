@@ -7,3 +7,4 @@ resources:
   - promtail-config.yaml
   - promtail-daemonset.yaml
   - promtail-serviceaccount.yaml
+  - promtail-service.yaml
