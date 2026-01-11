@@ -54,9 +54,10 @@ data:
         Host        loki.monitoring.svc
         Port        3100
         URI         /loki/api/v1/push
-        Labels      job=fluentbit,namespace=$namespace,pod=$pod_name,container=$container_name
-        Label_keys  $filename
-        Line_format json
+        Labels      job=fluentbit
+        Label_keys  $namespace,$pod_name,$container_name
+        Remove_keys filename
+        Auto_kubernetes_labels on
 
   parsers.conf: |
     [PARSER]
