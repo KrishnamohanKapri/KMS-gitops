@@ -46,9 +46,7 @@ data:
         Host        loki.monitoring.svc
         Port        3100
         URI         /loki/api/v1/push
-        Format      json
-        Json_date_key    timestamp
-        Json_date_format %Y-%m-%dT%H:%M:%S.%L
+        Format      json_lines
 
   parsers.conf: |
     [PARSER]
