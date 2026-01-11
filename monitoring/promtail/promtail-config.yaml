@@ -35,16 +35,18 @@ data:
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          # Path: /var/log/pods/namespace_podname_poduid/containername/*.log
+          # Path construction - working format
           - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
             separator: "_"
-            target_label: __tmp_kubernetes_pod_path
-          - source_labels: [__tmp_kubernetes_pod_path]
             target_label: __tmp_kubernetes_pod_dir
-            replacement: /var/log/pods/${__tmp_kubernetes_pod_path}
-          - source_labels: [__tmp_kubernetes_pod_dir, __meta_kubernetes_pod_container_name]
+          - source_labels: [__tmp_kubernetes_pod_dir]
+            regex: (.*)
+            target_label: __tmp_kubernetes_pod_path
+            replacement: /var/log/pods/$1
+          - source_labels: [__tmp_kubernetes_pod_path, __meta_kubernetes_pod_container_name]
             separator: "/"
+            target_label: __tmp_kubernetes_pod_path_full
+          - source_labels: [__tmp_kubernetes_pod_path_full]
+            regex: (.*)
             target_label: __path__
-          - source_labels: [__path__]
-            target_label: __path__
-            replacement: ${__path__}/*.log
+            replacement: $1/*.log
