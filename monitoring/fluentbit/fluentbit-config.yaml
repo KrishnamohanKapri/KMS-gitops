@@ -13,7 +13,33 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods/kms_*/*/*.log
+        Path              /var/log/pods/kms_kms-backend-*/*/*.log
+        Path_Key          filename
+        Parser            docker
+        Tag               kube.*
+        Refresh_Interval  5
+        Mem_Buf_Limit     50MB
+        Skip_Long_Lines   On
+        Read_from_Head    true
+        DB                /tmp/flb-db/flb-kube.db
+        DB.locking        true
+
+    [INPUT]
+        Name              tail
+        Path              /var/log/pods/kms_kms-frontend-*/*/*.log
+        Path_Key          filename
+        Parser            docker
+        Tag               kube.*
+        Refresh_Interval  5
+        Mem_Buf_Limit     50MB
+        Skip_Long_Lines   On
+        Read_from_Head    true
+        DB                /tmp/flb-db/flb-kube.db
+        DB.locking        true
+
+    [INPUT]
+        Name              tail
+        Path              /var/log/pods/kms_mongodb-*/*/*.log
         Path_Key          filename
         Parser            docker
         Tag               kube.*
