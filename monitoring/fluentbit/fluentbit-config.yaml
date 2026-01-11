@@ -49,12 +49,14 @@ data:
         Regex               namespace kms
 
     [OUTPUT]
-        Name        http
+        Name        loki
         Match       kube.*
         Host        loki.monitoring.svc
         Port        3100
         URI         /loki/api/v1/push
-        Format      json_lines
+        Labels      job=fluentbit,namespace=$namespace,pod=$pod_name,container=$container_name
+        Label_keys  $filename
+        Line_format json
 
   parsers.conf: |
     [PARSER]
