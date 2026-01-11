@@ -16,39 +16,24 @@ data:
       max_streams: 100
       max_line_size: 256KB
     scrape_configs:
-      - job_name: kms-only
+      - job_name: kubernetes-pods
         kubernetes_sd_configs:
           - role: pod
-            selectors:
-              - role: pod
-                field: metadata.namespace=kms
         relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_node_name]
-            target_label: __host__
+          # Only scrape kms namespace
+          - source_labels: [__meta_kubernetes_namespace]
+            action: keep
+            regex: kms
+          # Add labels BEFORE setting path
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
-          - action: replace
-            replacement: $1
-            separator: /
-            source_labels:
-              - __meta_kubernetes_namespace
-              - __meta_kubernetes_pod_name
-            target_label: job
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_namespace
+          - source_labels: [__meta_kubernetes_namespace]
             target_label: namespace
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_name
+          - source_labels: [__meta_kubernetes_pod_name]
             target_label: pod
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_container_name
+          - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          - replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-              - __meta_kubernetes_pod_uid
-              - __meta_kubernetes_pod_container_name
+          # Set log path - use pod UID with wildcard to match directory
+          - source_labels: [__meta_kubernetes_pod_uid]
             target_label: __path__
+            replacement: /var/log/pods/$1_$2_$3/*/*.log
