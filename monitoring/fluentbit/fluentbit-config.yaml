@@ -46,7 +46,7 @@ data:
     [FILTER]
         Name                grep
         Match               kube.*
-        Regex               namespace kms
+        Regex               $kubernetes['namespace_name'] kms
 
     [OUTPUT]
         Name        loki
