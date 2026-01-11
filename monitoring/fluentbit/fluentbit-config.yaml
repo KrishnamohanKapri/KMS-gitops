@@ -15,7 +15,7 @@ data:
         Name              tail
         Path              /var/log/pods/kms_*/*/*.log
         Path_Key          filename
-        Parser            docker
+        Parser            none
         Tag               kube.*
         Refresh_Interval  5
         Mem_Buf_Limit     50MB
