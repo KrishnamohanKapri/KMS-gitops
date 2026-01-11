@@ -24,7 +24,7 @@ data:
           - source_labels: [__meta_kubernetes_namespace]
             action: keep
             regex: kms
-          # Add labels BEFORE setting path
+          # Add labels
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
           - source_labels: [__meta_kubernetes_namespace]
@@ -33,7 +33,8 @@ data:
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          # Set log path - use pod UID with wildcard to match directory
-          - source_labels: [__meta_kubernetes_pod_uid]
+          # Set log path - EXACT format: namespace_podname_poduid/containername/*.log
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
+            separator: _
             target_label: __path__
-            replacement: /var/log/pods/*$1*/*/*.log
+            replacement: /var/log/pods/$1_$2_$3/*/*.log
