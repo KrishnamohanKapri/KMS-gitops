@@ -44,9 +44,15 @@ data:
         Annotations         Off
 
     [FILTER]
+        Name                modify
+        Match               kube.*
+        Condition           Key_value_matches kubernetes[namespace_name] kms
+        Add                 keep_log true
+
+    [FILTER]
         Name                grep
         Match               kube.*
-        Regex               $kubernetes['namespace_name'] kms
+        Regex               keep_log true
 
     [OUTPUT]
         Name        loki
