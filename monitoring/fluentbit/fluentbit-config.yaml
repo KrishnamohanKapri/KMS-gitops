@@ -26,18 +26,24 @@ data:
 
 
     [FILTER]
+        Name                record_modifier
+        Match               kube.*
+        Record              namespace kms
+
+    [FILTER]
         Name                kubernetes
         Match               kube.*
         Kube_URL            https://kubernetes.default.svc:443
         Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
-        Kube_Tag_Prefix     kube.var.log.pods.kms_
         Merge_Log           On
         Keep_Log            Off
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Labels              On
         Annotations         Off
+        Use_Kubelet         true
+        Kubelet_Port        10250
 
 
     [OUTPUT]
