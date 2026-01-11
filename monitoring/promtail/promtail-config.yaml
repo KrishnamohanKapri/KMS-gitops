@@ -22,11 +22,7 @@ data:
         pipeline_stages:
           - docker: {}
         relabel_configs:
-          # Filter to kms namespace
-          - source_labels: [__meta_kubernetes_namespace]
-            action: keep
-            regex: kms
-          # Standard labels
+          # Standard labels first
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
           - source_labels: [__meta_kubernetes_namespace]
@@ -35,22 +31,20 @@ data:
             target_label: pod
           - source_labels: [__meta_kubernetes_pod_container_name]
             target_label: container
-          # Path construction - WORKING FORMAT
-          # Step 1: Combine namespace_podname_poduid
+          # Path: /var/log/pods/namespace_podname_poduid/containername/*.log
           - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_pod_name, __meta_kubernetes_pod_uid]
             separator: "_"
-            target_label: __tmp_pod_dir
-          # Step 2: Prepend /var/log/pods/ using regex
-          - source_labels: [__tmp_pod_dir]
-            regex: "(.*)"
-            target_label: __tmp_pod_path
-            replacement: /var/log/pods/$1
-          # Step 3: Add container name
-          - source_labels: [__tmp_pod_path, __meta_kubernetes_pod_container_name]
+            target_label: __tmp_kubernetes_pod_path
+          - source_labels: [__tmp_kubernetes_pod_path]
+            target_label: __tmp_kubernetes_pod_dir
+            replacement: /var/log/pods/${__tmp_kubernetes_pod_path}
+          - source_labels: [__tmp_kubernetes_pod_dir, __meta_kubernetes_pod_container_name]
             separator: "/"
-            target_label: __tmp_full_path
-          # Step 4: Add /*.log suffix
-          - source_labels: [__tmp_full_path]
-            regex: "(.*)"
+            target_label: __tmp_kubernetes_pod_path_full
+          - source_labels: [__tmp_kubernetes_pod_path_full]
             target_label: __path__
-            replacement: $1/*.log
+            replacement: ${__tmp_kubernetes_pod_path_full}/*.log
+          # Filter to kms namespace AFTER path is set
+          - source_labels: [__meta_kubernetes_namespace]
+            action: keep
+            regex: kms
