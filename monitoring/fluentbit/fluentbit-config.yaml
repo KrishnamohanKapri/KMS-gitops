@@ -13,13 +13,16 @@ data:
 
     [INPUT]
         Name              tail
-        Path              /var/log/pods/kms_*/*/*.log
+        Path              /var/log/pods/*/*/*.log
+        Path_Key          filename
         Parser            docker
         Tag               kube.*
         Refresh_Interval  5
         Mem_Buf_Limit     50MB
         Skip_Long_Lines   On
         Read_from_Head    false
+        DB                /tmp/flb-db/flb-kube.db
+        DB.locking        true
 
     [FILTER]
         Name                kubernetes
@@ -34,6 +37,11 @@ data:
         K8S-Logging.Exclude Off
         Labels              On
         Annotations         Off
+
+    [FILTER]
+        Name                grep
+        Match               kube.*
+        Regex               namespace kms
 
     [OUTPUT]
         Name        http
