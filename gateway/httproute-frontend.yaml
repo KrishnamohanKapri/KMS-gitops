@@ -6,8 +6,8 @@ metadata:
 spec: 
   parentRefs:
   - name: kms-gateway
-  hostnames:
-  - "kms.example.com"
+  # hostnames:
+  # - "kms.example.com"
   rules:
   - matches:
     - path:
