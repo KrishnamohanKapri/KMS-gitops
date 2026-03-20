@@ -1,3 +1,26 @@
+# KMS GitOps (Kubernetes manifests)
+
+`KMS-gitops` contains the Kubernetes manifests and Argo CD application configuration for deploying the KMS stack. It includes:
+- Backend deployment + service
+- Frontend deployment + service
+- MongoDB StatefulSet + service
+- Gateway API configuration (routing to backend/frontend)
+- Monitoring/observability stack (Loki, Grafana, Tempo, Mimir, FluentBit)
+
+Workflow:
+- Update manifests and/or image tags in this repo
+- Argo CD detects the change and syncs it to the cluster
+- Automated sync/self-healing keeps the running state aligned with Git
+
+Prereqs (usually handled by `KMS-infra`):
+- A Kubernetes cluster with Argo CD and Gateway API installed
+- A `kms` namespace and required secrets (for app integrations)
+
+For detailed manifests, configuration options, and troubleshooting, see below.
+
+<details>
+<summary>More details (technical)</summary>
+
 # 🚀 KMS GitOps Repository
 
 > **Kubernetes manifests and GitOps configuration for the Kitchen Management System (KMS)**
@@ -762,3 +785,5 @@ kubectl logs -n argocd -l app.kubernetes.io/name=argocd-server
 ---
 
 **Built with ❤️ for the Kitchen Management System**
+
+</details>
